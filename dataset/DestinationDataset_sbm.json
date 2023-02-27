@@ -1,0 +1,37 @@
+{
+	"name": "DestinationDataset_sbm",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "synapseddw",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [
+			{
+				"name": "StoreCode",
+				"type": "varchar"
+			},
+			{
+				"name": "Date",
+				"type": "datetime",
+				"precision": 23,
+				"scale": 3
+			},
+			{
+				"name": "TotalSales",
+				"type": "bigint",
+				"precision": 19
+			},
+			{
+				"name": "TotalAmount",
+				"type": "bigint",
+				"precision": 19
+			}
+		],
+		"typeProperties": {
+			"schema": "dbo",
+			"table": "DailySales"
+		}
+	}
+}
