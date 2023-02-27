@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy_n6c",
+				"name": "CopySalesData",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
