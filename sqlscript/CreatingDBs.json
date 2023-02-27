@@ -1,0 +1,17 @@
+{
+	"name": "CreatingDBs",
+	"properties": {
+		"content": {
+			"query": "CREATE TABLE [dbo].[DailySales]\n(\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n\n)\nWITH\n(\n    DISTRIBUTION = HASH (StoreCode),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SynapseSpool",
+				"poolName": "SynapseSpool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}
