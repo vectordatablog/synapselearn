@@ -5,6 +5,9 @@
 		"workspaceName": {
 			"value": "csjrp-synapse"
 		},
+		"Synapsels_connectionString": {
+			"value": ""
+		},
 		"csjrp-synapse-WorkspaceDefaultSqlServer_connectionString": {
 			"value": "Integrated Security=False;Encrypt=True;Connection Timeout=30;Data Source=tcp:csjrp-synapse.sql.azuresynapse.net,1433;Initial Catalog=@{linkedService().DBName}"
 		},
