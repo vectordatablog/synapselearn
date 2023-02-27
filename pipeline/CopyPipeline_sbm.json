@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Copy_sbm",
+				"name": "CopyDailySales",
 				"type": "Copy",
 				"dependsOn": [],
 				"policy": {
