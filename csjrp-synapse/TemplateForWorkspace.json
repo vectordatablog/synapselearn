@@ -158,6 +158,62 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow_merge_files')]",
+			"type": "Microsoft.Synapse/workspaces/pipelines",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"activities": [
+					{
+						"name": "merge_file",
+						"type": "ExecuteDataFlow",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.12:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"dataflow": {
+								"referenceName": "Dataflow1",
+								"type": "DataFlowReference",
+								"parameters": {},
+								"datasetParameters": {
+									"sourcecsv": {},
+									"sourcejson": {},
+									"synapsesink": {}
+								}
+							},
+							"staging": {
+								"linkedService": {
+									"referenceName": "csjrp-synapse-WorkspaceDefaultStorage",
+									"type": "LinkedServiceReference"
+								},
+								"folderPath": "synapse"
+							},
+							"compute": {
+								"coreCount": 8,
+								"computeType": "General"
+							},
+							"traceLevel": "Fine"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/dataflows/Dataflow1')]",
+				"[concat(variables('workspaceId'), '/linkedServices/csjrp-synapse-WorkspaceDefaultStorage')]",
+				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/DestinationDataset_n6c')]",
 			"type": "Microsoft.Synapse/workspaces/datasets",
 			"apiVersion": "2019-06-01-preview",
@@ -246,6 +302,122 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/adls_source_json')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "csjrp-synapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "Json",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "stores.json",
+						"fileSystem": "exercise2"
+					}
+				},
+				"schema": {
+					"type": "object",
+					"properties": {
+						"city": {
+							"type": "string"
+						},
+						"code": {
+							"type": "string"
+						},
+						"size": {
+							"type": "string"
+						},
+						"latitude": {
+							"type": "number"
+						},
+						"longitude": {
+							"type": "number"
+						},
+						"population": {
+							"type": "string"
+						},
+						"state": {
+							"type": "string"
+						}
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/csjrp-synapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/dataflow_source_csv')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "csjrp-synapse-WorkspaceDefaultStorage",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "DelimitedText",
+				"typeProperties": {
+					"location": {
+						"type": "AzureBlobFSLocation",
+						"fileName": "sales-10.csv",
+						"folderPath": "SalesData",
+						"fileSystem": "exercise2"
+					},
+					"columnDelimiter": ",",
+					"escapeChar": "\\",
+					"firstRowAsHeader": true,
+					"quoteChar": "\""
+				},
+				"schema": [
+					{
+						"name": "StoreCode",
+						"type": "String"
+					},
+					{
+						"name": "Date",
+						"type": "String"
+					},
+					{
+						"name": "TotalSales",
+						"type": "String"
+					},
+					{
+						"name": "TotalAmount",
+						"type": "String"
+					}
+				]
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/csjrp-synapse-WorkspaceDefaultStorage')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/synapse_merged_data_ls')]",
+			"type": "Microsoft.Synapse/workspaces/datasets",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "Synapsels",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "AzureSqlDWTable",
+				"schema": [],
+				"typeProperties": {
+					"schema": "",
+					"table": "salesmergedata"
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/linkedServices/Synapsels')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/Synapsels')]",
 			"type": "Microsoft.Synapse/workspaces/linkedServices",
 			"apiVersion": "2019-06-01-preview",
@@ -327,6 +499,92 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('workspaceName'), '/Dataflow1')]",
+			"type": "Microsoft.Synapse/workspaces/dataflows",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "dataflow_source_csv",
+								"type": "DatasetReference"
+							},
+							"name": "sourcecsv"
+						},
+						{
+							"dataset": {
+								"referenceName": "adls_source_json",
+								"type": "DatasetReference"
+							},
+							"name": "sourcejson"
+						}
+					],
+					"sinks": [
+						{
+							"dataset": {
+								"referenceName": "synapse_merged_data_ls",
+								"type": "DatasetReference"
+							},
+							"name": "synapsesink"
+						}
+					],
+					"transformations": [
+						{
+							"name": "join1"
+						}
+					],
+					"scriptLines": [
+						"source(output(",
+						"          StoreCode as string,",
+						"          Date as string,",
+						"          TotalSales as string,",
+						"          TotalAmount as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false) ~> sourcecsv",
+						"source(output(",
+						"          city as string,",
+						"          code as string,",
+						"          size as string,",
+						"          latitude as double,",
+						"          longitude as double,",
+						"          population as string,",
+						"          state as string",
+						"     ),",
+						"     allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     ignoreNoFilesFound: false,",
+						"     documentForm: 'documentPerLine') ~> sourcejson",
+						"sourcecsv, sourcejson join(StoreCode == code,",
+						"     joinType:'inner',",
+						"     matchType:'exact',",
+						"     ignoreSpaces: false,",
+						"     broadcast: 'auto')~> join1",
+						"join1 sink(allowSchemaDrift: true,",
+						"     validateSchema: false,",
+						"     deletable:false,",
+						"     insertable:true,",
+						"     updateable:false,",
+						"     upsertable:false,",
+						"     format: 'table',",
+						"     staged: true,",
+						"     allowCopyCommand: true,",
+						"     skipDuplicateMapInputs: true,",
+						"     skipDuplicateMapOutputs: true,",
+						"     errorHandlingOption: 'stopOnFirstError') ~> synapsesink"
+					]
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('workspaceId'), '/datasets/dataflow_source_csv')]",
+				"[concat(variables('workspaceId'), '/datasets/adls_source_json')]",
+				"[concat(variables('workspaceId'), '/datasets/synapse_merged_data_ls')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('workspaceName'), '/WorkspaceSystemIdentity')]",
 			"type": "Microsoft.Synapse/workspaces/credentials",
 			"apiVersion": "2019-06-01-preview",
@@ -342,7 +600,47 @@
 			"apiVersion": "2019-06-01-preview",
 			"properties": {
 				"content": {
-					"query": "CREATE TABLE [dbo].[DailySales]\n(\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n\n)\nWITH\n(\n    DISTRIBUTION = HASH (StoreCode),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n",
+					"query": "CREATE TABLE [dbo].[DailySales]\n(\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n\n)\nWITH\n(\n    DISTRIBUTION = HASH (StoreCode),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n\n\nCREATE TABLE [dbo].[DailySalesCopyCmd]\n(\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n\n)\nWITH\n(\n    DISTRIBUTION = HASH (StoreCode),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SynapseSpool",
+						"poolName": "SynapseSpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/DataLoadWithPolyBase')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD='MYSTRONGpassword$$$@@@#'\nGO\n\nCREATE DATABASE SCOPED CREDENTIAL AzureStorageCredential\nWITH\n    IDENTITY = 'user',\n    SECRET = 'x46PaoC9hTvrTdjHcSdfkSjkdnLjgUh0MIIXHVwE7p519KZa9YPOrHetrAg5CloG6+7TWVgvEUbV+ASt4yy7xA=='\n\n;\nGO\n\nCREATE EXTERNAL DATA SOURCE AzureStorage\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'wasbs://exercise2@csjrpproject1.blob.core.windows.net',\n    CREDENTIAL = AzureStorageCredential\n);\nGO\n\nDROP EXTERNAL FILE FORMAT CSVFormat\nGO\n\nCREATE EXTERNAL FILE FORMAT CSVFormat\nWITH\n(   FORMAT_TYPE = DELIMITEDTEXT\n,    FORMAT_OPTIONS    (   FIELD_TERMINATOR = ','\n                    ,    STRING_DELIMITER = ''\n                    ,    USE_TYPE_DEFAULT = FALSE,\n                    FIRST_ROW=2\n                    )\n);\n\n\nCREATE SCHEMA [stage]\nGO\n\nDROP EXTERNAL TABLE [dbo].[DailySales_External]\nGO\n\nCREATE EXTERNAL TABLE [dbo].[DailySales_External](\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n)\nWITH\n(\n    LOCATION='/SalesData/',\n    DATA_SOURCE=AzureStorage,\n    FILE_FORMAT=CSVFormat\n)\n\n\nSELECT TOP 10 * FROM [dbo].[DailySales_External]\nGO\n\nDROP TABLE [stage].[DailSales]\nGO\n\nCREATE TABLE [stage].[DailySales]\nWITH(\n DISTRIBUTION=HASH(StoreCode)   \n)\nAS\nSELECT * FROM [dbo].[DailySales_External]\nGO\n\n\n-- Dropping all tables and Schemas\n\nDROP TABLE [stage].[DailySales]\n\n\n-- \n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "SynapseSpool",
+						"poolName": "SynapseSpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/LoadData')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "COPY INTO [dbo].[DailySalesCopyCmd]\nFROM 'https://csjrpproject1.blob.core.windows.net/exercise2/SalesData/*.csv'\nWITH(\n    FILE_TYPE='CSV',\n    CREDENTIAL=(IDENTITY='Shared Access Signature', SECRET='sp=rl&st=2023-02-27T23:28:59Z&se=2023-02-28T07:28:59Z&spr=https&sv=2021-06-08&sr=c&sig=T3Ou%2Bilf64v9UNlfqtQJS2RPl90k0%2Fzlq76v5J6PUmw%3D'),\n    ENCODING='UTF8',\n    FIELDTERMINATOR=',',\n    FIRSTROW=2\n)\n\n\nSELECT COUNT(*)\nFROM DailySalesCopyCmd\n\n\n",
 					"metadata": {
 						"language": "sql"
 					},
