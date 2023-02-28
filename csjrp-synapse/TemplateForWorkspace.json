@@ -209,8 +209,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/Dataflow1')]",
-				"[concat(variables('workspaceId'), '/linkedServices/csjrp-synapse-WorkspaceDefaultStorage')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+				"[concat(variables('workspaceId'), '/linkedServices/csjrp-synapse-WorkspaceDefaultStorage')]"
 			]
 		},
 		{
@@ -364,7 +363,6 @@
 				"typeProperties": {
 					"location": {
 						"type": "AzureBlobFSLocation",
-						"fileName": "sales-10.csv",
 						"folderPath": "SalesData",
 						"fileSystem": "exercise2"
 					},
