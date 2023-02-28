@@ -209,8 +209,7 @@
 			},
 			"dependsOn": [
 				"[concat(variables('workspaceId'), '/dataflows/Dataflow1')]",
-				"[concat(variables('workspaceId'), '/linkedServices/csjrp-synapse-WorkspaceDefaultStorage')]",
-				"[concat(variables('workspaceId'), '/integrationRuntimes/AutoResolveIntegrationRuntime')]"
+				"[concat(variables('workspaceId'), '/linkedServices/csjrp-synapse-WorkspaceDefaultStorage')]"
 			]
 		},
 		{
@@ -650,6 +649,26 @@
 					"currentConnection": {
 						"databaseName": "SynapseSpool",
 						"poolName": "SynapseSpool"
+					},
+					"resultLimit": 5000
+				},
+				"type": "SqlQuery"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('workspaceName'), '/serverless_querying')]",
+			"type": "Microsoft.Synapse/workspaces/sqlscripts",
+			"apiVersion": "2019-06-01-preview",
+			"properties": {
+				"content": {
+					"query": "CREATE DATABASE mydbname\nGO\n\nCREATE MASTER KEY ENCRYPTION BY PASSWORD ='MySecretPAsswordString@#%'\n\n\nCREATE DATABASE SCOPED CREDENTIAL sqlondemand\nWITH IDENTITY='SHARED ACCESS SIGNATURE',  \nSECRET = 'sv=2018-03-28&ss=bf&srt=sco&sp=rl&st=2019-10-14T12%3A10%3A25Z&se=2061-12-31T12%3A10%3A00Z&sig=KlSU2ullCscyTS0An0nozEpo4tO5JAgGBvw%2FJX2lguw%3D'\nGO\nCREATE EXTERNAL DATA SOURCE SqlOnDemandDemo WITH (\n    LOCATION = 'https://sqlondemandstorage.blob.core.windows.net',\n    CREDENTIAL = sqlondemand\n);\n\n\n\nSELECT TOP 20 *\nFROM OPENROWSET\n  (\n      BULK 'csv/population/*.csv',\n      DATA_SOURCE = 'SqlOnDemandDemo',\n      FORMAT = 'CSV', PARSER_VERSION = '2.0'\n  )\nWITH\n  (\n      country_code VARCHAR (5)\n    , country_name VARCHAR (100)\n    , year smallint\n    , population bigint\n  ) \n  AS r\n-- WHERE\n--   country_name = 'Luxembourg' AND year = 2017\n\n\nSELECT COUNT_BIG(*)\nFROM OPENROWSET\n  (\n      BULK 'parquet/taxi/year=2017/month=9/*.parquet',\n      DATA_SOURCE = 'SqlOnDemandDemo',\n      FORMAT='PARQUET'\n  ) AS nyc\n\n",
+					"metadata": {
+						"language": "sql"
+					},
+					"currentConnection": {
+						"databaseName": "mydbname",
+						"poolName": "Built-in"
 					},
 					"resultLimit": 5000
 				},
