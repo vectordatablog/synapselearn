@@ -2,7 +2,7 @@
 	"name": "CreatingDBs",
 	"properties": {
 		"content": {
-			"query": "CREATE TABLE [dbo].[DailySales]\n(\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n\n)\nWITH\n(\n    DISTRIBUTION = HASH (StoreCode),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n\n\nCREATE TABLE [dbo].[DailySalesCopyCmd]\n(\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n\n)\nWITH\n(\n    DISTRIBUTION = HASH (StoreCode),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n",
+			"query": "CREATE TABLE [dbo].[DailySales]\n(\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n\n)\nWITH\n(\n    DISTRIBUTION = HASH (StoreCode),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n\n\nCREATE TABLE [dbo].[DailySalesCopyCmd]\n(\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n\n)\nWITH\n(\n    DISTRIBUTION = HASH (StoreCode),\n    CLUSTERED COLUMNSTORE INDEX\n)\nGO\n\n\nSELECT top 10 * FROM dbo.salesmergedata",
 			"metadata": {
 				"language": "sql"
 			},
