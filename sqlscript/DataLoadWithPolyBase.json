@@ -1,0 +1,17 @@
+{
+	"name": "DataLoadWithPolyBase",
+	"properties": {
+		"content": {
+			"query": "CREATE MASTER KEY ENCRYPTION BY PASSWORD='MYSTRONGpassword$$$@@@#'\nGO\n\nCREATE DATABASE SCOPED CREDENTIAL AzureStorageCredential\nWITH\n    IDENTITY = 'user',\n    SECRET = 'x46PaoC9hTvrTdjHcSdfkSjkdnLjgUh0MIIXHVwE7p519KZa9YPOrHetrAg5CloG6+7TWVgvEUbV+ASt4yy7xA=='\n\n;\nGO\n\nCREATE EXTERNAL DATA SOURCE AzureStorage\nWITH (\n    TYPE = HADOOP,\n    LOCATION = 'wasbs://exercise2@csjrpproject1.blob.core.windows.net',\n    CREDENTIAL = AzureStorageCredential\n);\nGO\n\nDROP EXTERNAL FILE FORMAT CSVFormat\nGO\n\nCREATE EXTERNAL FILE FORMAT CSVFormat\nWITH\n(   FORMAT_TYPE = DELIMITEDTEXT\n,    FORMAT_OPTIONS    (   FIELD_TERMINATOR = ','\n                    ,    STRING_DELIMITER = ''\n                    ,    USE_TYPE_DEFAULT = FALSE,\n                    FIRST_ROW=2\n                    )\n);\n\n\nCREATE SCHEMA [stage]\nGO\n\nDROP EXTERNAL TABLE [dbo].[DailySales_External]\nGO\n\nCREATE EXTERNAL TABLE [dbo].[DailySales_External](\n    StoreCode VARCHAR(100) NOT NULL,\n    Date DATETIME NOT NULL,\n    TotalSales BIGINT NOT NULL,\n    TotalAmount BIGINT NOT NULL\n)\nWITH\n(\n    LOCATION='/SalesData/',\n    DATA_SOURCE=AzureStorage,\n    FILE_FORMAT=CSVFormat\n)\n\n\nSELECT TOP 10 * FROM [dbo].[DailySales_External]\nGO\n\nDROP TABLE [stage].[DailSales]\nGO\n\nCREATE TABLE [stage].[DailySales]\nWITH(\n DISTRIBUTION=HASH(StoreCode)   \n)\nAS\nSELECT * FROM [dbo].[DailySales_External]\nGO\n\n\n-- Dropping all tables and Schemas\n\nDROP TABLE [stage].[DailySales]\n\n\n-- \n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SynapseSpool",
+				"poolName": "SynapseSpool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

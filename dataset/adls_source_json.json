@@ -1,0 +1,44 @@
+{
+	"name": "adls_source_json",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "csjrp-synapse-WorkspaceDefaultStorage",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "Json",
+		"typeProperties": {
+			"location": {
+				"type": "AzureBlobFSLocation",
+				"fileName": "stores.json",
+				"fileSystem": "exercise2"
+			}
+		},
+		"schema": {
+			"type": "object",
+			"properties": {
+				"city": {
+					"type": "string"
+				},
+				"code": {
+					"type": "string"
+				},
+				"size": {
+					"type": "string"
+				},
+				"latitude": {
+					"type": "number"
+				},
+				"longitude": {
+					"type": "number"
+				},
+				"population": {
+					"type": "string"
+				},
+				"state": {
+					"type": "string"
+				}
+			}
+		}
+	}
+}

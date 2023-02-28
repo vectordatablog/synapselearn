@@ -1,0 +1,17 @@
+{
+	"name": "LoadData",
+	"properties": {
+		"content": {
+			"query": "COPY INTO [dbo].[DailySalesCopyCmd]\nFROM 'https://csjrpproject1.blob.core.windows.net/exercise2/SalesData/*.csv'\nWITH(\n    FILE_TYPE='CSV',\n    CREDENTIAL=(IDENTITY='Shared Access Signature', SECRET='sp=rl&st=2023-02-27T23:28:59Z&se=2023-02-28T07:28:59Z&spr=https&sv=2021-06-08&sr=c&sig=T3Ou%2Bilf64v9UNlfqtQJS2RPl90k0%2Fzlq76v5J6PUmw%3D'),\n    ENCODING='UTF8',\n    FIELDTERMINATOR=',',\n    FIRSTROW=2\n)\n\n\nSELECT COUNT(*)\nFROM DailySalesCopyCmd\n\n\n",
+			"metadata": {
+				"language": "sql"
+			},
+			"currentConnection": {
+				"databaseName": "SynapseSpool",
+				"poolName": "SynapseSpool"
+			},
+			"resultLimit": 5000
+		},
+		"type": "SqlQuery"
+	}
+}

@@ -1,0 +1,79 @@
+{
+	"name": "Dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "dataflow_source_csv",
+						"type": "DatasetReference"
+					},
+					"name": "sourcecsv"
+				},
+				{
+					"dataset": {
+						"referenceName": "adls_source_json",
+						"type": "DatasetReference"
+					},
+					"name": "sourcejson"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "synapse_merged_data_ls",
+						"type": "DatasetReference"
+					},
+					"name": "synapsesink"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          StoreCode as string,",
+				"          Date as string,",
+				"          TotalSales as string,",
+				"          TotalAmount as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false) ~> sourcecsv",
+				"source(output(",
+				"          city as string,",
+				"          code as string,",
+				"          size as string,",
+				"          latitude as double,",
+				"          longitude as double,",
+				"          population as string,",
+				"          state as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     ignoreNoFilesFound: false,",
+				"     documentForm: 'documentPerLine') ~> sourcejson",
+				"sourcecsv, sourcejson join(StoreCode == code,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     staged: true,",
+				"     allowCopyCommand: true,",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError') ~> synapsesink"
+			]
+		}
+	}
+}

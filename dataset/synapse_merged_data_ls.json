@@ -1,0 +1,16 @@
+{
+	"name": "synapse_merged_data_ls",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "Synapsels",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "AzureSqlDWTable",
+		"schema": [],
+		"typeProperties": {
+			"schema": "",
+			"table": "salesmergedata"
+		}
+	}
+}
